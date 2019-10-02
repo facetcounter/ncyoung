@@ -1,0 +1,1721 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en-US">
+<head profile="http://gmpg.org/xfn/11">
+	<title>Currently : not a blog</title>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+	<link rel="stylesheet" type="text/css" media="screen,projection" href="http://www.ncyoung.com/wp-content/themes/barthelme/style.css" title="Barthelme" />
+	<link rel="stylesheet" type="text/css" media="print" href="http://www.ncyoung.com/wp-content/themes/barthelme/print.css" />
+	<link rel="alternate" type="application/rss+xml" href="http://www.ncyoung.com/?feed=rss2" title="Currently RSS feed" />
+	<link rel="alternate" type="application/rss+xml" href="http://www.ncyoung.com/?feed=comments-rss2" title="Currently comments RSS feed" />
+	<link rel="pingback" href="http://www.ncyoung.com/xmlrpc.php" />
+
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.ncyoung.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.ncyoung.com/wp-includes/wlwmanifest.xml" /> 
+<link rel='index' title='Currently' href='http://www.ncyoung.com' />
+<meta name="generator" content="WordPress 2.8.4" />
+
+<style type="text/css" media="screen,projection">
+/*<![CDATA[*/
+/* CSS inserted by Barthelme theme options */
+	body{font-family:arial,helvtica,sans-serif;font-size:75%;}
+	div#content h2,div#content h3,div#content h4,div#content h5,div#content h6,body.archive div.archive-meta,body.attachment div.entry-content div.attachment-content p.attachment-name,body.home div#content div.entry-meta span,body.archive div#content div.entry-meta span,body.search div#content div.entry-meta span,body.single div.entry-date,body.single div.entry-meta,div#content blockquote,div.comments ol.commentlist li div.comment-meta,div.entry-content div.page-link,div.entry-content span.tag-links,body.page div.archive-meta,div.formcontainer form#commentform div.form-input input,div.formcontainer form#commentform div.form-textarea textarea#comment,input#s,div.entry-content div.entry-caption{font-family:georgia,times,serif;}
+	body div#content div.hentry{text-align:left;}
+	body div#wrapper{width:auto;}
+	div#header,div#header h1#blog-title a,div#header h1#blog-title a:link,div#header h1#blog-title a:visited{color:#fefefe;outline:none;text-decoration:none;}
+	body div#header{background:#bac8da url("http://www.ncyoung.com/wp-content/themes/barthelme/images/header-img.php?upper=8a9aae&lower=bac8da") repeat-x left top;}
+/*]]>*/
+</style>
+
+</head>
+
+<body class="wordpress y2019 m04 d12 h11 home loggedin">
+
+<div id="wrapper">
+
+	<div id="header" onclick="location.href='http://www.ncyoung.com/';">
+		<h1 id="blog-title"><a href="http://www.ncyoung.com/" title="Currently">Currently</a></h1>
+		<div id="blog-description">not a blog</div>
+	</div><!-- #header -->
+	
+	<div class="access"><span class="content-access"><a href="#content" title="Skip to content">Skip to content</a></span></div>
+
+<div id="globalnav"><ul id="menu"><li class="page_item_home home-link"><a href="http://www.ncyoung.com/" title="Currently" rel="home">Home</a></li></ul></div>
+
+	<div id="container">
+		<div id="content" class="hfeed">
+
+
+			<div id="post-194" class="hentry p1 post publish author-admin category-javascript category-programming category-work y2011 m03 d25 h02">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=194" title="Permalink to prototypes in javascript for image onload handlers" rel="bookmark">prototypes in javascript for image onload handlers</a></h2>
+						<div class="entry-content">
+<p>All this was trying to get it so all subsequent images created in a document would have a onload handler already setup (yes you guessed it I was trying to spy on a metrics library).</p>
+<p><strong>This works:</strong><br />
+<code>var t = new Image();<br />
+t.onload = function(){alert('yes')};<br />
+t.src="http://www.cisco.com/web/fw/i/logo.gif";</code></p>
+<p><strong>does not work</strong><br />
+<code>Image.prototype.onload = function(){alert('yes')};<br />
+var t = new Image();<br />
+t.src="http://www.cisco.com/web/fw/i/logo.gif";</code></p>
+<p><strong>this works in that you get a method called onload on resulting image objects.<br />
+It does not work in that you have to cal the method in order for it to fire&#8230;</strong><br />
+<code>document.images[0].constructor.prototype.onload = function(){alert('yes')};<br />
+var t = new Image();<br />
+t.src="http://www.cisco.com/web/fw/i/logo.gif";<br />
+</code><br />
+<strong>conclusion: onload != load handler</strong></p>
+<p><strong></p>
+<p>A coworker was headed into constructor override land:</strong><br />
+<code>var imgc = Image.prototype.constructor;<br />
+Image = function () {<br />
+    imgc.apply (this, arguments);<br />
+    console.log ('ccc', this, this instanceof Image);<br />
+    var self = this;<br />
+    setTimeout (function () {<br />
+        this.addEventListener ("load", function () {<br />
+            alert ('yes');<br />
+        }, false);<br />
+    }, 10);<br />
+};</code></p>
+<p><strong><br />
+this is why you need the settimeout:</strong><br />
+<code>var imgc = Image.prototype.constructor;<br />
+Image = function () {<br />
+    imgc.apply (this, arguments);<br />
+    console.log ('ccc', this, this instanceof Image);<br />
+    var self = this;</p>
+<p>        this.addEventListener ("load", function () {<br />
+            alert ('yes');<br />
+        }, false);</p>
+<p>};</code></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2011-03-25T14:09:20-0700">2011 03 25</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a><br/> <a href="http://www.ncyoung.com/?cat=26" title="View all posts in work" rel="category">work</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=194" title="Permalink to prototypes in javascript for image onload handlers">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=194" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-192" class="hentry p2 post publish author-admin category-art category-comics category-online category-video y2011 m03 d18 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=192" title="Permalink to bio notes" rel="bookmark">bio notes</a></h2>
+						<div class="entry-content">
+<p><iframe src="http://player.vimeo.com/video/21119709" width="400" height="225" frameborder="0"></iframe>
+<p><a href="http://vimeo.com/21119709">(notes on) biology</a> from <a href="http://vimeo.com/ornana">ornana films</a> on <a href="http://vimeo.com">Vimeo</a>.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2011-03-18T16:10:41-0700">2011 03 18</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=15" title="View all posts in comics" rel="category">comics</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=192" title="Permalink to bio notes">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=192" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-186" class="hentry p3 post publish author-admin category-javascript category-lists y2011 m01 d20 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=186" title="Permalink to " rel="bookmark"></a></h2>
+						<div class="entry-content">
+<ul>
+<li>flowchart: <a href="http://www.wired.com/magazine/2010/11/st_flowchart_social/">which social answer site is right for you?</a></li>
+<li><a href="https://www.eff.org/deeplinks/2011/01/eff-calls-immediate-action-defend-tunisian">tunisian government injects JS into facebook pages</a></li>
+<li><a href="http://www.facebook.com/careers/puzzles.php">solve a puzzle, get hired by facebook?</a> and <a href="http://www.techiegyan.com/2009/04/13/facebook%E2%80%99s-architecture/">facebook&#8217;s arcitecture</a></li>
+<li><a href="http://www.adequatelygood.com/2010/3/JavaScript-Module-Pattern-In-Depth">simple JS module patterns</a></li>
+<li><a href="http://erlebacher.org/2010/10/08/the-next-big-thingd/">thingdb</a></li>
+<li><a href="http://stevesouders.com/episodes/example.php?t=1292355082">episodes</a> and <a href="http://yahoo.github.com/boomerang/doc/use-cases.html">boomerang</a> for event based performance metrics</li>
+<li><a href="http://www.eecs.harvard.edu/~cduan/technical/git/git-1.shtml">understanding git</a></li>
+<li><a href="http://plato.stanford.edu/entries/freewill/">stanford encyclopedia of philosophy</a></li>
+<li><a href="http://longnow.org/seminars/">long now seminars</a></li>
+<li><a href="http://baencd.thefifthimperium.com/">baen cds</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2011-01-20T15:14:45-0800">2011 01 20</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=21" title="View all posts in lists" rel="category">lists</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=186" title="Permalink to ">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=186" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-184" class="hentry p4 post publish author-admin category-art category-craft y2011 m01 d03 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=184" title="Permalink to nifty chain" rel="bookmark">nifty chain</a></h2>
+						<div class="entry-content">
+<p><img class="alignnone" title="chain" src="http://farm6.static.flickr.com/5287/5321475819_7bb9dc3363_z.jpg" alt="" width="640" height="480" /></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2011-01-03T17:15:33-0800">2011 01 03</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=18" title="View all posts in craft" rel="category">craft</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=184" title="Permalink to nifty chain">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=184" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-182" class="hentry p5 post publish author-admin category-lists category-online y2010 m11 d11 h12">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=182" title="Permalink to links" rel="bookmark">links</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://www.newgrounds.com/portal/view/525347">scale of the universe</a></li>
+<li><a href="http://www.eecs.harvard.edu/~cduan/technical/git/">understanding git</a></li>
+<li><a href="http://snosoft.blogspot.com/2009/02/facebook-from-hackers-perspective.html">facebook for phishing</a></li>
+<li><a href="http://openkeyval.org/">openkeyval</a></li>
+<li><a href="http://net.tutsplus.com/tutorials/javascript-ajax/learning-serverside-javascript-with-node-js/">node.js</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-11-11T11:14:32-0800">2010 11 11</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=21" title="View all posts in lists" rel="category">lists</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=182" title="Permalink to links">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=182" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-180" class="hentry p6 post publish author-admin category-lists category-online y2010 m10 d15 h01 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=180" title="Permalink to lunches, figments, old stars and remodels" rel="bookmark">lunches, figments, old stars and remodels</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://figmentproject.org/2010/">figments</a></li>
+<li><a href="http://community.livejournal.com/ohnotheydidnt/43312509.html">old stars</a></li>
+<li><a href="http://easylunchboxes.smugmug.com/The-Best-Lunchbox-System/Yummy-Lunch-Ideas/10136835_YSuyb#696914291_YxmUd">lunches</a></li>
+<li><a href="http://remodelista.com/">remodels</a></li>
+<li><a href="http://www.tabit.net/">tabs</a></li>
+<li><a href="http://www.kk.org/cooltools/archives/004679.php">red bag</a></li>
+<li><a href="http://www.palladiumboots.com/cgi-bin/palladium/store/product_detail.html?pid=02352:090">boots</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-10-15T13:14:40-0700">2010 10 15</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=21" title="View all posts in lists" rel="category">lists</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=180" title="Permalink to lunches, figments, old stars and remodels">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=180" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-178" class="hentry p7 post publish author-admin category-javascript category-online category-things-i-hate y2010 m10 d11 h02">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=178" title="Permalink to ie6 memories" rel="bookmark">ie6 memories</a></h2>
+						<div class="entry-content">
+<p>http://mrdoob.com/lab/javascript/effects/ie6/</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-10-11T14:19:31-0700">2010 10 11</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=11" title="View all posts in things I hate" rel="category">things I hate</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=178" title="Permalink to ie6 memories">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=178" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-176" class="hentry p8 post publish author-admin category-art category-online category-video y2010 m09 d10 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=176" title="Permalink to logorama" rel="bookmark">logorama</a></h2>
+						<div class="entry-content">
+<p><iframe src="http://player.vimeo.com/video/10149605" width="400" height="265" frameborder="0"></iframe>
+<p><a href="http://vimeo.com/10149605">Logorama</a> from <a href="http://vimeo.com/user3365583">Marc Altshuler &#8211; Human Music</a> on <a href="http://vimeo.com">Vimeo</a>.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-09-10T16:03:59-0700">2010 09 10</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=176" title="Permalink to logorama">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=176" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-171" class="hentry p9 post publish author-admin category-craft category-javascript category-online category-programming y2010 m09 d09 h01">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=171" title="Permalink to js1k contest entry" rel="bookmark">js1k contest entry</a></h2>
+						<div class="entry-content">
+<p>Here&#8217;s my entry into the 1k contest:</p>
+<p><a href="http://js1k.com/demo/754">http://js1k.com/demo/754</a></p>
+<p>It made me really appreciate the other entries (most of which are much more complex than mine).</p>
+<p>Compression-by-hand is a fine art, which I&#8217;ve probably had enough of for a while now.</p>
+<p>Here&#8217;s the code on github:</p>
+<p><a href="http://github.com/facetcounter/bubble1k.js">http://github.com/facetcounter/bubble1k.js</a></p>
+<p>Here&#8217;s a bookmarklet so you can <a href="javascript:o=document.createElement(&quot;script&quot;);document.getElementsByTagName(&quot;head&quot;)[0].appendChild(o);o.src='http://github.com/facetcounter/bubble1k.js/raw/master/bubble-ni.js';void(0);">destroy any page</a>!</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-09-09T13:31:25-0700">2010 09 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=18" title="View all posts in craft" rel="category">craft</a><br/> <a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=171" title="Permalink to js1k contest entry">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=171" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-167" class="hentry p10 post publish author-admin category-art category-video y2010 m08 d06 h01 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=167" title="Permalink to giant bubbles" rel="bookmark">giant bubbles</a></h2>
+						<div class="entry-content">
+<p><object width="640" height="385"><param name="movie" value="http://www.youtube.com/v/5bjggctu3kw&amp;hl=en_US&amp;fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/5bjggctu3kw&amp;hl=en_US&amp;fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="640" height="385"></embed></object></p>
+<p><a href="http://www.ehow.com/how_2366591_giant-soap-bubbles.html">recipe for giant bubbles</a></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-08-06T13:22:26-0700">2010 08 06</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=167" title="Permalink to giant bubbles">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=167" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-165" class="hentry p11 post publish author-admin category-art category-online category-poetry category-things-i-hate category-video category-work y2010 m08 d04 h03">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=165" title="Permalink to visual metaphor for projects thrashing process" rel="bookmark">visual metaphor for projects thrashing process</a></h2>
+						<div class="entry-content">
+<p><object width="480" height="385"><param name="movie" value="http://www.youtube.com/v/zwYW_RGWSmM&amp;hl=en_US&amp;fs=1"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/zwYW_RGWSmM&amp;hl=en_US&amp;fs=1" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="480" height="385"></embed></object></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-08-04T15:06:58-0700">2010 08 04</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=17" title="View all posts in poetry" rel="category">poetry</a><br/> <a href="http://www.ncyoung.com/?cat=11" title="View all posts in things I hate" rel="category">things I hate</a><br/> <a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a><br/> <a href="http://www.ncyoung.com/?cat=26" title="View all posts in work" rel="category">work</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=165" title="Permalink to visual metaphor for projects thrashing process">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=165" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-162" class="hentry p12 post publish author-admin category-javascript category-online category-programming y2010 m07 d20 h09 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=162" title="Permalink to AtomPub" rel="bookmark">AtomPub</a></h2>
+						<div class="entry-content">
+<p>I need to see if I can start using this to standardize how some of the simpler web services structure their output.  RSS has sometimes ended up being a default way of representing a list of things because it&#8217;s well defined and makes an easy point of agreement.</p>
+<p><a href="http://bitworking.org/projects/atom/rfc5023.html">AtomPub</a></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-07-20T09:43:04-0700">2010 07 20</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=162" title="Permalink to AtomPub">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=162" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-160" class="hentry p13 post publish author-admin category-css category-programming y2010 m07 d20 h09">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=160" title="Permalink to css precompilers" rel="bookmark">css precompilers</a></h2>
+						<div class="entry-content">
+<p>These let you use parts of CSS 3 and some additional  syntactic sugar, then get processed into regular css.  I have it on my list to look at the output and see how livable it is.</p>
+<ul>
+<li><a href="http://sass-lang.com/">sass</a></li>
+<li><a href="http://lesscss.org/">less</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-07-20T09:40:21-0700">2010 07 20</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=24" title="View all posts in css" rel="category">css</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=160" title="Permalink to css precompilers">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=160" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-155" class="hentry p14 post publish author-admin category-online category-programming category-work y2010 m07 d06 h12 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=155" title="Permalink to git is awesome" rel="bookmark">git is awesome</a></h2>
+						<div class="entry-content">
+<p>I&#8217;ve been tinkering with git and github.  Here&#8217;s an intro to git:</p>
+<p>http://pivotallabs.com/talks/80-git-for-newbies</p>
+<p>Here&#8217;s  a git cheat sheet:</p>
+<p>http://ktown.kde.org/~zrusin/git/git-cheat-sheet-large.png</p>
+<p>Some  docs:</p>
+<p>http://git-scm.com/#documentation</p>
+<p>And some more docs  (with info on fast forwards):</p>
+<p>http://www.kernel.org/pub/software/scm/git/docs/git-push.html</p>
+<p>My  github page:</p>
+<p>http://github.com/facetcounter</p>
+<p>A git book online:</p>
+<p>http://progit.org/book/</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-07-06T12:01:51-0700">2010 07 06</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a><br/> <a href="http://www.ncyoung.com/?cat=26" title="View all posts in work" rel="category">work</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=155" title="Permalink to git is awesome">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=155" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-153" class="hentry p15 post publish author-admin category-javascript category-programming y2010 m07 d01 h10">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=153" title="Permalink to dragdealer" rel="bookmark">dragdealer</a></h2>
+						<div class="entry-content">
+<p>drag dealer does drag and drop, iPhone compatible&#8230;</p>
+<p>http://code.ovidiu.ch/dragdealer/</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-07-01T10:44:46-0700">2010 07 01</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=153" title="Permalink to dragdealer">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=153" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-151" class="hentry p16 post publish author-admin category-javascript category-programming category-work y2010 m07 d01 h10 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=151" title="Permalink to CORS" rel="bookmark">CORS</a></h2>
+						<div class="entry-content">
+<p>Cross origin resource sharing is a browser standard that lets you get around the script tag or iframe hacks for accessing web service content hosted on another domain.</p>
+<p>Here&#8217;s the spec: http://www.w3.org/TR/cors/</p>
+<p>Firefox and webkit browsers switch to CORS anytime you ask for an XHR to another domain, but the XHR interface is the same.  IE8 has CORS support using a special interface: http://msdn.microsoft.com/en-us/library/cc288060%28VS.85%29.aspx</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-07-01T10:43:31-0700">2010 07 01</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a><br/> <a href="http://www.ncyoung.com/?cat=26" title="View all posts in work" rel="category">work</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=151" title="Permalink to CORS">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=151" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-149" class="hentry p17 post publish author-admin category-lists category-things-i-hate y2010 m06 d21 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=149" title="Permalink to sarcastic comments" rel="bookmark">sarcastic comments</a></h2>
+						<div class="entry-content">
+<p>Some of these would make great away status messages:</p>
+<ul>
+<li>I&#8217;m not ignoring you I just lost interest</li>
+<li>if I promise to miss you will you go away?</li>
+<li>I promise to be nicer if you promise to be smarter</li>
+<li>you almost made me cry but then you left</li>
+<li>I&#8217;m not listening but go on&#8230; I enjoy how your voice makes my ears bleed</li>
+<li>I&#8217;d tell you to go to hell, but i work there and i don’t want to see you everyday!</li>
+<li>you&#8217;re just jealous because the voices only talk to me</li>
+<li>I am busy right now, can I ignore you some other time?</li>
+<li>silence is golden… duct tape is silver.</li>
+<li>awww that`s so cute!  you actually think i care…</li>
+<li>Oh you want my number??….here it is….1-800-WATEVA</li>
+<li>I’d agree with you but then we’d both be wrong.</li>
+<li>I’m sorry while you were talking I was trying to figure where the hell you got the idea I cared.</li>
+<li>Stop being so stupid.. it’s my turn.</li>
+<li>You can have as many friends that money can buy, but I’ll still hate you for free.</li>
+<li>I couldn’t repair your brakes, so I just made your horn louder.</li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-06-21T16:08:47-0700">2010 06 21</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=21" title="View all posts in lists" rel="category">lists</a><br/> <a href="http://www.ncyoung.com/?cat=11" title="View all posts in things I hate" rel="category">things I hate</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=149" title="Permalink to sarcastic comments">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=149" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-147" class="hentry p18 post publish author-admin category-work y2010 m05 d19 h03 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=147" title="Permalink to thinking about hiring" rel="bookmark">thinking about hiring</a></h2>
+						<div class="entry-content">
+<p>Every tech team needs a <a href="http://www.randsinrepose.com/archives/2006/09/06/russian_history.html">russian lit major<br />
+</a></p>
+<p>Maybe you need a <a href="http://www.randsinrepose.com/archives/2005/03/20/free_electron.html">free electron</a> too.</p>
+<p>Which <a href="http://manasgarg.blogspot.com/2004/12/technical-ladder-vs-management-ladder.html">ladder</a> are you on?</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-05-19T15:28:15-0700">2010 05 19</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=26" title="View all posts in work" rel="category">work</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=147" title="Permalink to thinking about hiring">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=147" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-145" class="hentry p19 post publish author-admin category-things-i-hate y2010 m04 d02 h12">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=145" title="Permalink to ice cream hijinks" rel="bookmark">ice cream hijinks</a></h2>
+						<div class="entry-content">
+<p>New york super fudge chunk when it&#8217;s short on chunks.  It&#8217;s still good chocolate ice cream but it&#8217;s not good for my expectations.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-04-02T12:17:15-0700">2010 04 02</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=11" title="View all posts in things I hate" rel="category">things I hate</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=145" title="Permalink to ice cream hijinks">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=145" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-143" class="hentry p20 post publish author-admin category-unix y2010 m03 d29 h10 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=143" title="Permalink to my favorite grep to mv pipe" rel="bookmark">my favorite grep to mv pipe</a></h2>
+						<div class="entry-content">
+<p>grep &#8211;max-count=1 -l -r &#8211;include=*.txt &#8211;exclude-dir=fragments &#8216;pattern&#8217; ./*|while read line; do mv &#8220;$line&#8221; newLocation; done</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-03-29T10:00:37-0700">2010 03 29</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=25" title="View all posts in unix" rel="category">unix</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=143" title="Permalink to my favorite grep to mv pipe">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=143" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-142" class="hentry p21 post publish author-admin category-uncategorized y2010 m03 d26 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=142" title="Permalink to woah" rel="bookmark">woah</a></h2>
+						<div class="entry-content">
+<p>http://www.behance.net/Gallery/_quotMoominvalley_quot/238408</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-03-26T16:29:48-0700">2010 03 26</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=1" title="View all posts in Uncategorized" rel="category">Uncategorized</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=142" title="Permalink to woah">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=142" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-140" class="hentry p22 post publish author-admin category-music category-online y2010 m03 d17 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=140" title="Permalink to tabs for traditional music" rel="bookmark">tabs for traditional music</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://toneway.com/songs">tone way</a></li>
+<li><a href="http://kristinhall.org/songbook/Songbook.html">Kristen Hall&#8217;s songbook</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-03-17T16:17:24-0700">2010 03 17</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=6" title="View all posts in music" rel="category">music</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=140" title="Permalink to tabs for traditional music">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=140" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-137" class="hentry p23 post publish author-admin category-art category-javascript category-online category-programming y2010 m02 d26 h06">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=137" title="Permalink to processing.js" rel="bookmark">processing.js</a></h2>
+						<div class="entry-content">
+<p>It&#8217;s the processing API ported to javascript and implemented in canvas.  Let the fun begin.</p>
+<p>http://processingjs.org/</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-02-26T17:08:33-0800">2010 02 26</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=137" title="Permalink to processing.js">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=137" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-135" class="hentry p24 post publish author-admin category-online category-programming y2010 m02 d08 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=135" title="Permalink to discovering YQL" rel="bookmark">discovering YQL</a></h2>
+						<div class="entry-content">
+<p>A co-worker started using pipes, which is awfully cool, then someone else stumbled on YQL, which I think pipes is a front end for.  YQL imagines the web as a giant database, with tables defined for diffferent web services, for search results, for HTML documents&#8230; it&#8217;s crazy.</p>
+<ul>
+<li><a href="http://ajaxian.com/archives/yql-converting-the-web-to-json-with-mock-sql">yql article at ajaxian</a></li>
+<li>rss aggregating query (<a href="http://developer.yahoo.com/yql/console/?q=select%20*%20from%20rss%20where%20url%3D%27http%3A%2F%2Fwww.ncyoung.com%2F%3Ffeed%3Drss2%27%20or%20url%3D%27http%3A%2F%2Fhackaday.com%2Ffeed%2F%27">console</a> / <a href="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20rss%20where%20url%3D'http%3A%2F%2Fwww.ncyoung.com%2F%3Ffeed%3Drss2'%20or%20url%3D'http%3A%2F%2Fhackaday.com%2Ffeed%2F'&amp;format=json&amp;callback=cbfunc">json</a>)</li>
+<blockquote>
+<li>select * from rss where url=&#8217;http://www.ncyoung.com/?feed=rss2&#8242; or url=&#8217;http://hackaday.com/feed/&#8217;</li>
+</blockquote>
+<li>xhtml query (<a href="http://developer.yahoo.com/yql/console/?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fcisco.com%22%20and%20xpath%3D%27%2F%2Fmeta[%40name%3D%22docType%22]%27%20limit%203">console</a> / <a href="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fcisco.com%22%20and%20xpath%3D'%2F%2Fmeta%5B%40name%3D%22docType%22%5D'%20limit%203&amp;format=xml">xml</a>)</li>
+<blockquote>
+<li>select * from html where url=&#8221;http://cisco.com&#8221; and xpath=&#8217;//meta[@name="docType"]&#8216; limit 3</li>
+</blockquote>
+<li>search results query (<a href="http://developer.yahoo.com/yql/console/?q=select%20*%20from%20local.search%20where%20query%3D%22sushi%22%20and%20location%3D%22san%20francisco%2C%20ca%22#h=select%20*%20from%20local.search%20where%20query%3D%22falafel%22%20and%20location%3D%22portland%2Cor%22">console</a> / <a href="http://query.yahooapis.com/v1/public/yql?q=select%20*%20from%20local.search%20where%20query%3D%22falafel%22%20and%20location%3D%22portland%2Cor%22&amp;format=json&amp;callback=cbfunc">json</a>)</li>
+<blockquote>
+<li>select * from local.search where query=&#8221;falafel&#8221; and location=&#8221;portland,or&#8221;</li>
+</blockquote>
+<li>show tables (<a href="http://developer.yahoo.com/yql/console/?q=select%20*%20from%20html%20where%20url%3D%22http%3A%2F%2Fcisco.com%22%20and%20xpath%3D%27%2F%2Fmeta[%40name%3D%22docType%22]%27%20limit%203#h=show%20tables">console</a> / <a href="http://query.yahooapis.com/v1/public/yql?q=show%20tables&amp;format=xml">xml</a>)</li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-02-08T17:07:10-0800">2010 02 08</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=135" title="Permalink to discovering YQL">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=135" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-132" class="hentry p25 post publish author-admin category-unix y2010 m02 d07 h01">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=132" title="Permalink to my favorite tar command" rel="bookmark">my favorite tar command</a></h2>
+						<div class="entry-content">
+<pre>This archives and compresses a bunch of files in one step.
+
+tar czvf archiveName.tgz directoryToArchive
+
+Note that the 'f' option must come last.</pre>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-02-07T12:29:51-0800">2010 02 07</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=25" title="View all posts in unix" rel="category">unix</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=132" title="Permalink to my favorite tar command">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=132" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-128" class="hentry p26 post publish author-admin category-art category-online category-programming y2010 m02 d03 h07 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=128" title="Permalink to processing for javascript" rel="bookmark">processing for javascript</a></h2>
+						<div class="entry-content">
+<p><a href="http://balldroppings.com/js/">balldroppings</a>, a philip glass constructor.</p>
+<p><a href="http://processingjs.org/exhibition">processing js</a> samples.  A lot were done as chrome experiments.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2010-02-03T18:13:58-0800">2010 02 03</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=128" title="Permalink to processing for javascript">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=128" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-124" class="hentry p27 post publish author-admin category-javascript category-programming y2009 m12 d29 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=124" title="Permalink to js unit testing follow up" rel="bookmark">js unit testing follow up</a></h2>
+						<div class="entry-content">
+<p>I admit to being one of those people who has scratched their heads and said &#8220;javascript? How do you test it?&#8221;  What that meant to me, of course was &#8220;how do you automate testing?&#8221;</p>
+<p>Certainly as my client side code has increased in complexity, I&#8217;ve moved towards more structured and repeatable ad hoc testing, driven by requirements and a test plan.  In some cases the win from automated testing was great enough for me to start to custom code some automated tests.</p>
+<p>Long and the short of it, I&#8217;m evaluating javascript test automation and it&#8217;s starting to look good.</p>
+<p>My first stop was qunit, which I&#8217;d heard about via jQuery.  I quickly ended up looking into screwUnit and jspec and yui and others.</p>
+<p>James Carr had a useful <a href="http://blog.james-carr.org/category/tdd-javascript-series/">round up of testing libraries</a> which had me thinking either <a href="http://github.com/nkallen/screw-unit#readme">screwUnit</a> or <a href="http://visionmedia.github.com/jspec/">jspec</a> would be good.  I like the ruby style of declaring tests &#8230; code.should_be(readable).  I don&#8217;t like learning new vocabularies (javascript tests should be written in javascript?)  screwUnit&#8217;s readme was more approachable for me so I started leaning that way.</p>
+<p><a href="http://aaronqian.com/articles/2009/04/12/javascript-bdd-test-frameworks-compared.html">This review</a> was oddly helpful in narrowing me in one screwUnit as was <a href="http://www.slideshare.net/joydivider/agile-javascript-testing">this presentation</a>.  <a href="http://groups.google.com/group/screw-unit/browse_thread/thread/ba3a683b355531f4">This email thread</a> set me back a bit.</p>
+<p>Late in the game I came upon <a href="http://github.com/pivotal/jasmine">jasmine</a>, with a lot of what I liked about screwUnit plus good examples for spies, asynchronous and ajax testing.  Plus this <a href="http://groups.google.com/group/jasmine-js/browse_thread/thread/dacd293c025fe802#">evidence of responsive maintaniers</a>.  So that&#8217;s where I&#8217;m starting.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-12-29T15:29:35-0800">2009 12 29</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=124" title="Permalink to js unit testing follow up">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=124" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-121" class="hentry p28 post publish author-admin category-css category-javascript category-programming y2009 m12 d22 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=121" title="Permalink to css-like selectors to create html" rel="bookmark">css-like selectors to create html</a></h2>
+						<div class="entry-content">
+<p>http://code.google.com/p/zen-coding/</p>
+<p>*3 means repeat 3 times</p>
+<p>$ means &#8220;insert iteration number here&#8221;</p>
+<p>div#thing&gt;ul*3&gt;li#it-$*3&gt;a+</p>
+<p>table&gt;tr*2&gt;td*3&gt;table+</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-12-22T17:14:57-0800">2009 12 22</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=24" title="View all posts in css" rel="category">css</a><br/> <a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=121" title="Permalink to css-like selectors to create html">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=121" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-117" class="hentry p29 post publish author-admin category-too-much-free-time y2009 m12 d21 h07">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=117" title="Permalink to things to come back to" rel="bookmark">things to come back to</a></h2>
+						<div class="entry-content">
+<p>A classic for this category, wikipedia&#8217;s <a href="http://en.wikipedia.org/wiki/Wikipedia:Lamest_edit_wars">lamest edit wars</a>.  Made me realize how much time some people really have on their hands (even when I didn&#8217;t have enough time to read the whole thing).</p>
+<p>Woah.  Just woah.  A <a href="http://www.slashfilm.com/2009/12/17/watch-this-70-minute-video-review-of-star-wars-the-phantom-menace/">70 minute review of the phantom menace</a>.</p>
+<p>I personally know of someone who lost weeks of his life to just one of the <a href="http://www.boingboing.net/2009/12/16/the-boing-boing-20-p-1.html">games on this list</a>.  And he normally looks down on people who waste time on video games.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-12-21T18:14:59-0800">2009 12 21</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=23" title="View all posts in too much free time" rel="category">too much free time</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=117" title="Permalink to things to come back to">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=117" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-112" class="hentry p30 post publish author-admin category-gadgets y2009 m12 d15 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=112" title="Permalink to building sets" rel="bookmark">building sets</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://www.contraptor.org/">contraptor</a></li>
+<li><a href="http://makerbeam.com/">makerBeam</a></li>
+<li><a href="http://blog.makezine.com/archive/2009/12/open_source_hardware_2009_-_the_def.html">make&#8217;s list of open source hardware</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-12-15T15:31:12-0800">2009 12 15</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=5" title="View all posts in gadgets" rel="category">gadgets</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=112" title="Permalink to building sets">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=112" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-109" class="hentry p31 post publish author-admin category-online y2009 m12 d14 h06">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=109" title="Permalink to the kiss" rel="bookmark">the kiss</a></h2>
+						<div class="entry-content">
+<p><img class="alignnone" title="the kiss" src="http://img.photobucket.com/albums/v620/theweaselking/main4/129023617005216459.jpg" alt="" width="500" height="325" /></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-12-14T17:59:12-0800">2009 12 14</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=109" title="Permalink to the kiss">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=109" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-107" class="hentry p32 post publish author-admin category-online y2009 m11 d19 h12 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=107" title="Permalink to google stuff" rel="bookmark">google stuff</a></h2>
+						<div class="entry-content">
+<p>Into a land weary of dojo versus jquery debates comes <a href="http://code.google.com/closure/">a masked stranger</a>&#8230; or is it more accurate to call this the singularity where the oleph is jacked into the net?</p>
+<p>Some other google stuff I&#8217;ve been wanting to look at:</p>
+<p>The <a href="http://www.google.com/friendconnect/home/developers?hl=en">friend API</a> (opensocial based tools).  We thought facebook was killing myspace but it&#8217;s really just replacing it.  Will openSocial provide an end to the treadmill?  Couple this with <a href="http://code.google.com/apis/accounts/docs/OAuth.html">OAuth and openId</a> please!</p>
+<p>On a side note, I used to blog about annotations.  Hey look, it&#8217;s <a href="http://www.google.com/sidewiki/intl/en/index.html">google sidewiki</a>!  I don&#8217;t think it could be called a third voice killer for obvious reasons.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-19T11:14:07-0800">2009 11 19</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=107" title="Permalink to google stuff">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=107" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-103" class="hentry p33 post publish author-admin category-javascript category-programming y2009 m11 d18 h12">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=103" title="Permalink to json validation" rel="bookmark">json validation</a></h2>
+						<div class="entry-content">
+<p>Some guy <a href="http://james.newtonking.com/about.aspx">James</a> wrote a package of json utilities for .net.  I don&#8217;t do .net but there&#8217;s still something really interesting in this package&#8230; a json schema language and validation implementation.  I can&#8217;t find specs for the schema language, but here&#8217;s the <a href="http://www.codeplex.com/Json">project page</a>, docs for the <a href="http://james.newtonking.com/projects/json/help/">json .net classes</a>, and a <a href="http://james.newtonking.com/projects/json/schema.aspx">demo of the validation engine</a>.</p>
+<p>You can look at the demo for some examples of schemas.  The only other json validation stuff I&#8217;ve seen so far has been either convert to XML and then validate, or just simple well formedness validation.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-18T11:20:19-0800">2009 11 18</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=103" title="Permalink to json validation">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=103" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-100" class="hentry p34 post publish author-admin category-programming y2009 m11 d12 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=100" title="Permalink to kanban for software" rel="bookmark">kanban for software</a></h2>
+						<div class="entry-content">
+<p>A couple articles on the kanban variation on agile:</p>
+<p>http://agileproductdesign.com/blog/2009/kanban_over_simplified.html</p>
+<p>http://leansoftwareengineering.com/ksse/scrum-ban/</p>
+<p>I think the appeal for me lies in this description of how the scrum is different:</p>
+<blockquote><p>Instead of the regular meeting ritual [scrum] of checking in with each person to find out what they worked on yesterday and will work on today, the discussion revolves around the Kanban board and what will likely move on and off the board today, where “traffic” seems the heaviest, and what we could do to clear bottlenecks.</p></blockquote>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-12T17:52:37-0800">2009 11 12</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=22" title="View all posts in programming" rel="category">programming</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=100" title="Permalink to kanban for software">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=100" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-96" class="hentry p35 post publish author-admin category-javascript category-lists y2009 m11 d12 h06">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=96" title="Permalink to js unit testing" rel="bookmark">js unit testing</a></h2>
+						<div class="entry-content">
+<p>This may turn into reviews soon but for now here&#8217;s a post listing javascript unit testing libraries:</p>
+<ul>
+<li><a href="http://docs.jquery.com/QUnit">qunit</a> from the guy who says &#8220;<a href="http://ejohn.org/blog/javascript-testing-does-not-scale/">javascript unit testing does not scale</a>&#8220;</li>
+<li><a href="http://github.com/alexyoung/riotjs">riotjs</a> a port of a ruby test harness, which I think is a riot</li>
+<li><a href="http://github.com/tobie/evidence">evidence</a> another from a ruby/python guy, from all the evidence I could gather.</li>
+<li><a href="http://jsmock.sourceforge.net/">jsmock</a> which I can&#8217;t figure out but hey I like mocking things as much as the next guy</li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-12T17:43:02-0800">2009 11 12</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=20" title="View all posts in javascript" rel="category">javascript</a><br/> <a href="http://www.ncyoung.com/?cat=21" title="View all posts in lists" rel="category">lists</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=96" title="Permalink to js unit testing">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=96" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-89" class="hentry p36 post publish author-admin category-music category-online y2009 m11 d11 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=89" title="Permalink to bands that archive live shows" rel="bookmark">bands that archive live shows</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://www.theymightbegiants.com/archived-shows/">they might be giants</a></li>
+<li><a href="http://www.primuslive.com/">primus</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-11T17:41:43-0800">2009 11 11</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=6" title="View all posts in music" rel="category">music</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=89" title="Permalink to bands that archive live shows">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=89" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-85" class="hentry p37 post publish author-admin category-calendars category-music y2009 m11 d06 h06">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=85" title="Permalink to band tour dates" rel="bookmark">band tour dates</a></h2>
+						<div class="entry-content">
+<ul>
+<li><a href="http://www.snzippers.com/tour">squirrel nut zippers</a></li>
+<li><a href="http://www.cakemusic.com/tour.html">cake</a></li>
+<li><a href="http://www.arcticmonkeys.com/gigs.php?type=upcoming">arctic monkeys</a></li>
+<li><a href="http://www.mmw.net/events.jsp">madesky martin and wood</a></li>
+<li><a href="http://www.myspace.com/themeatpuppets">meat puppets</a></li>
+<li><a href="http://www.theymightbegiants.com/calendar/">they might be giants</a></li>
+<li><a href="http://www.lesclaypool.com/tour/">les claypool</a></li>
+<li><a href="http://www.thewaifs.com/tours.php">the waifs</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-06T17:05:44-0800">2009 11 06</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=7" title="View all posts in calendars" rel="category">calendars</a><br/> <a href="http://www.ncyoung.com/?cat=6" title="View all posts in music" rel="category">music</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=85" title="Permalink to band tour dates">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=85" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-82" class="hentry p38 post publish author-admin category-education y2009 m11 d05 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=82" title="Permalink to public school: a mix of brilliant opportunities and wasted time" rel="bookmark">public school: a mix of brilliant opportunities and wasted time</a></h2>
+						<div class="entry-content">
+<p>Started with a post by someone wondering what parents do about <a href="http://www.crummy.com/2009/11/02/0">skipping grades</a>.  More on what <a href="http://www.harihareswara.net/nb/nb.cgi/view/sumana/2008/07/04/1">really matters</a> (love the idea of a interdependence day).  And the peanut gallery (commentors) at ycombinator have a lot to say about either <a href="http://news.ycombinator.com/item?id=583159">making use of scholl or bailing</a></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-05T17:21:20-0800">2009 11 05</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=19" title="View all posts in education" rel="category">education</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=82" title="Permalink to public school: a mix of brilliant opportunities and wasted time">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=82" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-76" class="hentry p39 post publish author-admin category-comics category-online y2009 m11 d02 h06">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=76" title="Permalink to find your perfect match" rel="bookmark">find your perfect match</a></h2>
+						<div class="entry-content">
+<p>Please click the image to visit the awesome site this is from:</p>
+<p><a href="http://shigabooks.com/indeces/nick.html"><img class="alignnone" title="dreamboat" src="http://shigabooks.com/strips/nick/dreamboat.gif" alt="" width="930" height="650" /></a></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-02T17:57:18-0800">2009 11 02</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=15" title="View all posts in comics" rel="category">comics</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=76" title="Permalink to find your perfect match">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=76" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-72" class="hentry p40 post publish author-admin category-craft category-gadgets y2009 m11 d02 h06 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=72" title="Permalink to beeswax candles" rel="bookmark">beeswax candles</a></h2>
+						<div class="entry-content">
+<p>I just got:</p>
+<ul>
+<li><a href="http://www.draperbee.com/">3 lbs of beeswax</a></li>
+<li><a href="http://www.lonestarcandlesupply.com/candlemolds/votivemolds.html">some votive molds</a></li>
+<li><a href="http://www.lonestarcandlesupply.com/products/candlemolds_round-mold-(2-x-4-12).html">a 2 by 4.5 in mold</a></li>
+<li><a href="http://www.lonestarcandlesupply.com/products/candlemolds_seamless-aluminum-round-3-x-4.html">a3 by 4 inch mold</a></li>
+<li><a href="http://www.lonestarcandlesupply.com/products/candlewicks_wick-sampler-kit--cd-series.html">A wick sampler set</a></li>
+<li><a href="http://www.lonestarcandlesupply.com/products/candlewicks_wick-sampler-kit--eco-series-(10-inch).html">another wick sampler set</a></li>
+</ul>
+<p>I think we&#8217;re going to be able to experiment with that and get a working candle.  Or two.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-11-02T17:32:46-0800">2009 11 02</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=18" title="View all posts in craft" rel="category">craft</a><br/> <a href="http://www.ncyoung.com/?cat=5" title="View all posts in gadgets" rel="category">gadgets</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=72" title="Permalink to beeswax candles">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=72" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-67" class="hentry p41 post publish author-admin category-poetry y2009 m10 d26 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=67" title="Permalink to " rel="bookmark"></a></h2>
+						<div class="entry-content">
+<h3>A History of Origami</h3>
+<h4>by Bob Hicok</h4>
+<p><br/><br/><br/></p>
+<pre>
+two women in three days<br />
+	cried on the green bench in the park<br />
+	 	where i found a dollar<br />
+	 	folded into a boat.</p>
+<p>i thought it was the crying bench and cried<br />
+	on the crying bench<br />
+	 	when it became available.</p>
+<p>	 	 	 	 	 	i cried<br />
+by thinking of all the people<br />
+	who’ve never broken a shop window, not the baker’s<br />
+	window, the bead-seller’s,<br />
+	 	who sells beads for purposes<br />
+	 	i find hard to list: necklaces,<br />
+	 	 	the hanging of strings of beads<br />
+	in doorways, the owning of beads<br />
+	 	 	 	 	 	just in case.</p>
+<p>breaking a shop window with a piece of shale<br />
+	the size of my heart, a piece of shale<br />
+	 	on which i’ve drawn my heart, not my actual heart<br />
+	 	 	but my feelings of my heart,<br />
+	 	 	 	 	 	since i’ve never seen my heart,<br />
+	would set something free.</p>
+<p>i don’t know what that something is<br />
+	 	but it would be free.</p>
+<p>and my heart would have survived its travels<br />
+	through glass, its jagged voyage<br />
+	through my reflection.</p>
+<p>you see now why i cried: none of this is real.</p>
+<p>until i can answer yes to the cop who asks, is this your heart<br />
+	 	among the ruins of your reflection?<br />
+	 	 i won’t be a man, despite what my anatomy<br />
+	 	insists.</p>
+<p>it insists<br />
+	that i overcome a sense of resistance when i move,<br />
+	that i move<br />
+as long as i am able to move, and when i am unable<br />
+	 	to move, that i stop.</p>
+<p>it would be free and look like a bird, an actual bird<br />
+	or a dollar folded into a bird, a dollar bird<br />
+	 	 	in a dollar boat.</p>
+<p>which is to say<br />
+	 	i believe origami arrives<br />
+	 	 	when we need it most.</p>
+<p>i can’t prove this but i can’t prove<br />
+	 	you’re a good person though i suspect<br />
+	you’re a good person.</p>
+<p>you who opened the door.</p>
+<p>you who tipped your hat.</p>
+<p>you who ran into the fire and carried<br />
+	the fire safely out.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-26T16:45:40-0700">2009 10 26</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=17" title="View all posts in poetry" rel="category">poetry</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=67" title="Permalink to ">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=67" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-62" class="hentry p42 post publish author-admin category-math category-online category-simulations y2009 m10 d21 h05 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=62" title="Permalink to live goeometry" rel="bookmark">live goeometry</a></h2>
+						<div class="entry-content">
+<p>It&#8217;s a <a href="http://livegeometry.com/">geometry modeling tool</a> that runs in the browser.</p>
+<p>I think <a href="http://en.wikipedia.org/wiki/Compass_and_straightedge_constructions">compass and ruler construction</a> is just an amazing intersection of the practical and the ideal, mathematical proof and hand work.  Here&#8217;s <a href="http://www.mathopenref.com/tocs/constructionstoc.html">a list of starter constructions</a>.</p>
+<p>Live geometry lets you create the circles and lines you need to have in order to do a construction, then move and resize the parts while keeping them constrained in a way that maintains the construction.  Look at the demos section for examples of this.  The parabola is especially good.</p>
+<p>There&#8217;s a good <a href="http://blogs.msdn.com/kirillosenkov/archive/2009/08/08/5-min-screencast-live-geometry-overview.aspx">screencast</a></p>
+<p>Reminds me a bit of <a href="http://www.phunland.com/wiki/Home">phun</a>.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-21T17:01:06-0700">2009 10 21</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=12" title="View all posts in math" rel="category">math</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=16" title="View all posts in simulations" rel="category">simulations</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=62" title="Permalink to live goeometry">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=62" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-60" class="hentry p43 post publish author-admin category-comics category-online y2009 m10 d21 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=60" title="Permalink to Shiga" rel="bookmark">Shiga</a></h2>
+						<div class="entry-content">
+<p><a href="http://shigabooks.com/books/bookhunter/d1.html">Book Hunter</a>: hard boiled detective story for hard core bibliophiles.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-21T16:50:35-0700">2009 10 21</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=15" title="View all posts in comics" rel="category">comics</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=60" title="Permalink to Shiga">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=60" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-58" class="hentry p44 post publish author-admin category-gadgets category-online y2009 m10 d21 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=58" title="Permalink to sticky notes using webkit&#8217;s version of gears" rel="bookmark">sticky notes using webkit&#8217;s version of gears</a></h2>
+						<div class="entry-content">
+<p>I don&#8217;t know why but <a href="http://webkit.org/demos/sticky-notes/">this implementation of sticky notes</a> really brought home the potential of client side data storage for me.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-21T16:46:48-0700">2009 10 21</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=5" title="View all posts in gadgets" rel="category">gadgets</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=58" title="Permalink to sticky notes using webkit&#8217;s version of gears">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=58" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-56" class="hentry p45 post publish author-admin category-video y2009 m10 d20 h05">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=56" title="Permalink to synesthesia" rel="bookmark">synesthesia</a></h2>
+						<div class="entry-content">
+<p><object width="560" height="340"><param name="movie" value="http://www.youtube.com/v/aIEiOrxhtNQ&#038;hl=en&#038;fs=1&#038;"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/aIEiOrxhtNQ&#038;hl=en&#038;fs=1&#038;" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="560" height="340"></embed></object></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-20T17:03:42-0700">2009 10 20</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=56" title="Permalink to synesthesia">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=56" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-54" class="hentry p46 post publish author-admin category-inventions category-online y2009 m10 d20 h01 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=54" title="Permalink to IM enabled USB robot arm" rel="bookmark">IM enabled USB robot arm</a></h2>
+						<div class="entry-content">
+<p>This would be a robot arm that attaches to the side of the monitor and gets wired up to your instant messenging software.  By sending the person a given IM token, it would cause tha arm to take that action.  Kind of like emoticons but maybe we could name them after their first basic use: slapicons.</p>
+<p>Or we could call them strokeicons, flip-off-icons, spill-your-coffee-cons, clear-a-tiny-portion-of-your-deskicons, eye-pokeicons, etc.</p>
+<p>The main problem with the model is that it&#8217;s much more fun for the person&#8217;s chat buddies than it is for the person who would need to install it.</p>
+<p>Update: Someone beat me to this idea:</p>
+<p><img class="alignnone" title="robot head bonker" src="http://www.pinktentacle.com/images/computopia_4.jpg" alt="" width="468" height="811" /></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-20T13:29:45-0700">2009 10 20</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=14" title="View all posts in inventions" rel="category">inventions</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=54" title="Permalink to IM enabled USB robot arm">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=54" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-47" class="hentry p47 post publish author-admin category-art category-math y2009 m10 d16 h01">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=47" title="Permalink to non periodic tiling" rel="bookmark">non periodic tiling</a></h2>
+						<div class="entry-content">
+<p><a href="http://local.wasp.uwa.edu.au/~pbourke/texture_colour/nonperiodic/">Such a weird mix of fractal and chaotic</a>.  I especially love the chair tiling where you either need to fill in with a square tile at some point or use it on an L shaped room.</p>
+<p>The flickr search for <a href="http://www.flickr.com/search/?w=all&amp;q=islamic+tile&amp;m=text">islamic tile</a> is a great dive into pattern.</p>
+<p>Plus an <a href="http://www.designspongeonline.com/2008/05/welcome-julia-and-how-to-make-a-repeat-pattern.html">old but neat trick</a>.  Here&#8217;s how to do the <a href="http://melemel.deviantart.com/art/Repeat-patterns-in-Photoshop-101450081">exact same thing</a> in photoshop.   <a href="http://veerle.duoh.com/blog/comments/creating_patterns_in_photoshop_cs2/">Here&#8217;s a new way</a> that uses photoshop tools I didn&#8217;t know about.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-16T13:02:56-0700">2009 10 16</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=13" title="View all posts in art" rel="category">art</a><br/> <a href="http://www.ncyoung.com/?cat=12" title="View all posts in math" rel="category">math</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=47" title="Permalink to non periodic tiling">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=47" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-42" class="hentry p48 post publish author-admin category-things-i-hate y2009 m10 d15 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=42" title="Permalink to things I hate" rel="bookmark">things I hate</a></h2>
+						<div class="entry-content">
+<ul>
+<li>the cars</li>
+<li> the flu</li>
+<li> buffering</li>
+<li> backaches</li>
+<li> modest mouse</li>
+<li> the flu</li>
+<li> backaches</li>
+<li> not having tests</li>
+<li> facebook</li>
+<li> stomach aches</li>
+<li>uncapitalized sentances, names, etc</li>
+<li>the balloon boy</li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-15T16:29:41-0700">2009 10 15</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=11" title="View all posts in things I hate" rel="category">things I hate</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=42" title="Permalink to things I hate">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=42" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-36" class="hentry p49 post publish author-admin category-online category-video y2009 m10 d15 h10">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=36" title="Permalink to hitler&#8217;s mad again" rel="bookmark">hitler&#8217;s mad again</a></h2>
+						<div class="entry-content">
+<p>Hitler is mad about everything:</p>
+<ul>
+<li> <a href="http://www.youtube.com/watch?v=bXb8sLeCwYo">his iphone broke</a></li>
+<li>he can&#8217;t <a href="http://www.youtube.com/watch?v=fHGyIOrmlr0&amp;feature=related">compete with Hanna Montana</a></li>
+<li>he found out <a href="http://www.youtube.com/watch?v=frZTf3mX97c">blu-ray won</a></li>
+</ul>
+<p>There are dozens of these and it seems like more pop up every time I look.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-15T10:12:25-0700">2009 10 15</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a><br/> <a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=36" title="Permalink to hitler&#8217;s mad again">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=36" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-32" class="hentry p50 post publish author-admin category-games category-online y2009 m10 d13 h05 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=32" title="Permalink to interactive fiction" rel="bookmark">interactive fiction</a></h2>
+						<div class="entry-content">
+<p>What we used to call text adventure games are taking on a  new life as a subset of what people now call <a href="http://en.wikipedia.org/wiki/Interactive_fiction">interactive fiction</a>. There&#8217;s a yearly <a href="http://ifwiki.org/index.php?title=15th_Annual_Interactive_Fiction_Competition/Parchment">interactive fiction contest</a> that yields some strange yet frustrating adventure games.</p>
+<p>Interesting side trip to look at <a href="http://code.google.com/p/parchment/">parchment</a>.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-13T17:23:31-0700">2009 10 13</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=10" title="View all posts in games" rel="category">games</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=32" title="Permalink to interactive fiction">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=32" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-26" class="hentry p51 post publish author-admin category-video y2009 m10 d12 h03">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=26" title="Permalink to fun youtube searches" rel="bookmark">fun youtube searches</a></h2>
+						<div class="entry-content">
+<p>Happy:</p>
+<ul>
+<li><a href="http://www.youtube.com/results?search_query=baby+laughing&amp;search_type=&amp;aq=f">laughing baby</a></li>
+<li><a href="http://www.youtube.com/results?search_query=skateboarding+dog&amp;search_type=&amp;aq=f">skateboarding dog</a></li>
+<li><a href="http://www.youtube.com/results?search_query=curious+cat&amp;search_type=&amp;aq=f">curious cat</a></li>
+</ul>
+<p>Amazing:</p>
+<ul>
+<li><a href="http://www.youtube.com/results?search_query=trial+bike&amp;search_type=&amp;aq=f">trial bike</a></li>
+<li><a href="http://www.youtube.com/results?search_query=bboy&amp;search_type=&amp;aq=f">b-boy</a></li>
+<li><a href="http://www.youtube.com/results?search_query=catapult&amp;search_type=&amp;aq=f">catapult</a></li>
+<li><a href="http://www.youtube.com/results?search_query=downhill+pov&amp;search_type=&amp;aq=f">downhill pov</a></li>
+</ul>
+<p>Scary:</p>
+<ul>
+<li><a href="http://www.youtube.com/results?search_query=police+chase&amp;search_type=&amp;aq=0&amp;oq=police+">police chase</a></li>
+<li><a href="http://www.youtube.com/results?search_query=riot+footage&amp;search_type=&amp;aq=f">riot footage</a></li>
+<li><a href="http://www.youtube.com/results?search_query=hockey+fight&amp;search_type=&amp;aq=f">hockey fight</a></li>
+</ul>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-12T15:40:30-0700">2009 10 12</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=26" title="Permalink to fun youtube searches">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=26" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-23" class="hentry p52 post publish author-admin category-games category-online y2009 m10 d12 h03 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=23" title="Permalink to chronotron" rel="bookmark">chronotron</a></h2>
+						<div class="entry-content">
+<p>In this <a href="http://www.kongregate.com/games/Scarybug/chronotron">time travel game</a> you can play through a level as many times as you need to.  Each time you play, you run through the level along with all the selves from each preceding time you played the level.  So you really have to set things up the first time you play the level so that you can solve it the second (or third, or whatever) time.  It&#8217;s a little hard to describe but it&#8217;s inventive and fun.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-12T15:24:28-0700">2009 10 12</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=10" title="View all posts in games" rel="category">games</a><br/> <a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=23" title="Permalink to chronotron">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=23" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-21" class="hentry p53 post publish author-admin category-medicine y2009 m10 d09 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=21" title="Permalink to placebos" rel="bookmark">placebos</a></h2>
+						<div class="entry-content">
+<p>I&#8217;ve always been amazed at the power of the placebo and the incredible work that drug trials have to go through to control for their effects.  Now some people are <a href="http://www.wired.com/medtech/drugs/magazine/17-09/ff_placebo_effect?currentPage=all">studying the placebo effect</a> outright.</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T16:17:48-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=8" title="View all posts in medicine" rel="category">medicine</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=21" title="Permalink to placebos">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=21" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-16" class="hentry p54 post publish author-admin category-calendars y2009 m10 d09 h04 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=16" title="Permalink to clinton street theater" rel="bookmark">clinton street theater</a></h2>
+						<div class="entry-content">
+<p>Here&#8217;s <a href="http://www.clintonsttheater.com/calendar.html">their calendar</a>.</p>
+<p>The theater is here:</p>
+<p><iframe width="425" height="350" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="http://maps.google.com/maps?oe=utf-8&amp;client=firefox-a&amp;ie=UTF8&amp;q=clinton+street+theater&amp;fb=1&amp;gl=us&amp;hq=clinton+street+theater&amp;hnear=Portland,+OR&amp;cid=0,0,12496493904721149213&amp;ei=ZcPPSuS9H4f-M7efkJQD&amp;ved=0CBEQnwIwAA&amp;t=h&amp;iwloc=A&amp;ll=45.503368,-122.640225&amp;spn=0.006295,0.006295&amp;output=embed"></iframe><br /><small><a href="http://maps.google.com/maps?oe=utf-8&amp;client=firefox-a&amp;ie=UTF8&amp;q=clinton+street+theater&amp;fb=1&amp;gl=us&amp;hq=clinton+street+theater&amp;hnear=Portland,+OR&amp;cid=0,0,12496493904721149213&amp;ei=ZcPPSuS9H4f-M7efkJQD&amp;ved=0CBEQnwIwAA&amp;t=h&amp;iwloc=A&amp;ll=45.503368,-122.640225&amp;spn=0.006295,0.006295&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T16:08:27-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=7" title="View all posts in calendars" rel="category">calendars</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=16" title="Permalink to clinton street theater">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=16" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-14" class="hentry p55 post publish author-admin category-music y2009 m10 d09 h04">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=14" title="Permalink to slack" rel="bookmark">slack</a></h2>
+						<div class="entry-content">
+<p>Used to see this band play at house parties.  I think I have the album an casette somewhere too, but now <a href="http://www.randalljahnson.com/gallery/blue-yonder-sounds/slack/">bigger than breakfast</a> is on the internet!  Thanks Mike!</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T16:06:03-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=6" title="View all posts in music" rel="category">music</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=14" title="Permalink to slack">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=14" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-9" class="hentry p56 post publish author-admin category-gadgets y2009 m10 d09 h02 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=9" title="Permalink to monkeylectric lcd bike spoke lights" rel="bookmark">monkeylectric lcd bike spoke lights</a></h2>
+						<div class="entry-content">
+<p>They are pretty bright and beautiful.</p>
+<p><a href="http://www.monkeylectric.com/m132s_faq.htm">faq</a></p>
+<p><object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/DLtbeU8FJW0&#038;hl=en&#038;fs=1&#038;"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/DLtbeU8FJW0&#038;hl=en&#038;fs=1&#038;" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T14:30:41-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=5" title="View all posts in gadgets" rel="category">gadgets</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=9" title="Permalink to monkeylectric lcd bike spoke lights">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=9" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-7" class="hentry p57 post publish author-admin category-video y2009 m10 d09 h02">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=7" title="Permalink to best cat video ever" rel="bookmark">best cat video ever</a></h2>
+						<div class="entry-content">
+<p><object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" width="425" height="344" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,40,0"><param name="allowFullScreen" value="true" /><param name="allowscriptaccess" value="always" /><param name="src" value="http://www.youtube.com/v/GSMCRD35ch4&amp;hl=en&amp;fs=1&amp;" /><param name="allowfullscreen" value="true" /><embed type="application/x-shockwave-flash" width="425" height="344" src="http://www.youtube.com/v/GSMCRD35ch4&amp;hl=en&amp;fs=1&amp;" allowscriptaccess="always" allowfullscreen="true"></embed></object></p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T14:22:22-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=4" title="View all posts in video" rel="category">video</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=7" title="Permalink to best cat video ever">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=7" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="post-3" class="hentry p58 post publish author-admin category-online y2009 m10 d09 h12 alt">
+				<div class="post-container">
+					<div class="post-content">
+						<h2 class="entry-title"><a href="http://www.ncyoung.com/?p=3" title="Permalink to red shirt" rel="bookmark">red shirt</a></h2>
+						<div class="entry-content">
+<p>Tried to make a red tshirt at zazzle and failed.  They don&#8217;t have red!!!</p>
+
+
+
+						</div>
+					</div>
+				</div>
+				<div class="entry-meta">
+					<span class="entry-date"><abbr class="published" title="2009-10-09T12:58:52-0700">2009 10 09</abbr></span>
+					<span class="entry-author author vcard"><a class="url fn" href="http://www.ncyoung.com/?author=1" title="View all posts by Nathan">Nathan</a></span>					<span class="entry-category"><a href="http://www.ncyoung.com/?cat=3" title="View all posts in online" rel="category">online</a></span>
+					<span class="entry-comments"><span>Comments Off</span></span>
+					<span class="entry-permalink"><a href="http://www.ncyoung.com/?p=3" title="Permalink to red shirt">Permalink</a></span>
+					<span class='entry-edit'><a class="post-edit-link" href="http://www.ncyoung.com/wp-admin/post.php?action=edit&amp;post=3" title="Edit post">Edit</a></span>
+				</div>
+			</div><!-- .post -->
+
+
+			<div id="nav-below" class="navigation">
+				<div class="nav-previous"></div>
+				<div class="nav-next"></div>
+			</div>
+
+		</div><!-- #content .hfeed -->
+	</div><!-- #container -->
+
+	<div id="primary" class="sidebar">
+		<ul>
+<li id="categories-3" class="widget widget_categories"><h3 class='widgettitle'>Categories</h3>
+		<ul>
+	<li class="cat-item cat-item-13"><a href="http://www.ncyoung.com/?cat=13" title="View all posts filed under art">art</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.ncyoung.com/?cat=7" title="View all posts filed under calendars">calendars</a>
+</li>
+	<li class="cat-item cat-item-15"><a href="http://www.ncyoung.com/?cat=15" title="View all posts filed under comics">comics</a>
+</li>
+	<li class="cat-item cat-item-18"><a href="http://www.ncyoung.com/?cat=18" title="View all posts filed under craft">craft</a>
+</li>
+	<li class="cat-item cat-item-24"><a href="http://www.ncyoung.com/?cat=24" title="View all posts filed under css">css</a>
+</li>
+	<li class="cat-item cat-item-19"><a href="http://www.ncyoung.com/?cat=19" title="View all posts filed under education">education</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.ncyoung.com/?cat=5" title="View all posts filed under gadgets">gadgets</a>
+</li>
+	<li class="cat-item cat-item-10"><a href="http://www.ncyoung.com/?cat=10" title="View all posts filed under games">games</a>
+</li>
+	<li class="cat-item cat-item-14"><a href="http://www.ncyoung.com/?cat=14" title="View all posts filed under inventions">inventions</a>
+</li>
+	<li class="cat-item cat-item-20"><a href="http://www.ncyoung.com/?cat=20" title="View all posts filed under javascript">javascript</a>
+</li>
+	<li class="cat-item cat-item-21"><a href="http://www.ncyoung.com/?cat=21" title="View all posts filed under lists">lists</a>
+</li>
+	<li class="cat-item cat-item-12"><a href="http://www.ncyoung.com/?cat=12" title="View all posts filed under math">math</a>
+</li>
+	<li class="cat-item cat-item-8"><a href="http://www.ncyoung.com/?cat=8" title="View all posts filed under medicine">medicine</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.ncyoung.com/?cat=6" title="View all posts filed under music">music</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.ncyoung.com/?cat=3" title="View all posts filed under online">online</a>
+</li>
+	<li class="cat-item cat-item-17"><a href="http://www.ncyoung.com/?cat=17" title="View all posts filed under poetry">poetry</a>
+</li>
+	<li class="cat-item cat-item-22"><a href="http://www.ncyoung.com/?cat=22" title="View all posts filed under programming">programming</a>
+</li>
+	<li class="cat-item cat-item-16"><a href="http://www.ncyoung.com/?cat=16" title="View all posts filed under simulations">simulations</a>
+</li>
+	<li class="cat-item cat-item-11"><a href="http://www.ncyoung.com/?cat=11" title="View all posts filed under things I hate">things I hate</a>
+</li>
+	<li class="cat-item cat-item-23"><a href="http://www.ncyoung.com/?cat=23" title="View all posts filed under too much free time">too much free time</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.ncyoung.com/?cat=1" title="View all posts filed under Uncategorized">Uncategorized</a>
+</li>
+	<li class="cat-item cat-item-25"><a href="http://www.ncyoung.com/?cat=25" title="View all posts filed under unix">unix</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://www.ncyoung.com/?cat=4" title="View all posts filed under video">video</a>
+</li>
+	<li class="cat-item cat-item-26"><a href="http://www.ncyoung.com/?cat=26" title="View all posts filed under work">work</a>
+</li>
+		</ul>
+</li>
+<li id="linkcat-9" class="widget widget_links"><h3 class='widgettitle'>Dailies</h3>
+
+	<ul class='xoxo blogroll'>
+<li><a href="http://calagator.org/" title="portland tech events" target="_blank">calagator</a></li>
+<li><a href="http://woot.com" target="_blank">woot</a></li>
+
+	</ul>
+</li>
+
+<li id="linkcat-2" class="widget widget_links"><h3 class='widgettitle'>My Links</h3>
+
+	<ul class='xoxo blogroll'>
+<li><a href="http://www.amazon.com/wishlist/3PU2SL4434E4R">amazon wish list</a></li>
+<li><a href="http://www.flickr.com/photos/35365951@N06/">flickr photos</a></li>
+<li><a href="http://archive.ncyoung.com">old weblog</a></li>
+<li><a href="http://www.zazzle.com/n4th4n">zazzle store</a></li>
+
+	</ul>
+</li>
+
+
+		</ul>
+	</div>
+
+	<div id="footer">
+		<span id="copyright">&copy; 2019 <span class="vcard"><a class="url fn n" href=""><span class="given-name"></span> <span class="family-name"></span></a></span></span>
+		<span class="meta-sep">|</span>
+		<span id="generator-link">Thanks, <a href="http://wordpress.org/" title="WordPress" rel="generator">WordPress</a></span>
+		<span class="meta-sep">|</span>
+		<span id="theme-link"><a href="http://www.plaintxt.org/themes/barthelme/" title="Barthelme theme for WordPress" rel="follow designer">Barthelme</a> theme by <span class="vcard"><a class="url fn n" href="http://scottwallick.com/" title="scottwallick.com" rel="follow designer"><span class="given-name">Scott</span><span class="additional-name"> Allan</span><span class="family-name"> Wallick</span></a></span></span><!-- Theme design credit, that's all -->
+		<span class="meta-sep">|</span>
+		<span id="web-standards"> Standards Compliant <a href="http://validator.w3.org/check/referer" title="Valid XHTML">XHTML</a> &amp; <a href="http://jigsaw.w3.org/css-validator/validator?profile=css2&amp;warning=2&amp;uri=http://www.ncyoung.com/wp-content/themes/barthelme/style.css" title="Valid CSS">CSS</a></span>
+		<span class="meta-sep">|</span>
+		<span id="footer-rss"> RSS <a href="http://www.ncyoung.com/?feed=rss2" title="Currently RSS 2.0 Feed" rel="alternate" type="application/rss+xml">Posts</a> &amp; <a href="http://www.ncyoung.com/?feed=comments-rss2" title="Currently Comments RSS 2.0 Feed" rel="alternate" type="application/rss+xml">Comments</a></span>
+	</div><!-- #footer -->
+
+
+</div><!-- #wrapper -->
+
+</body><!-- end trasmission -->
+</html>
